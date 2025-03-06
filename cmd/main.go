@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"runtime"
 )
 import "github.com/go-gl/glfw/v3.3/glfw"
@@ -12,15 +13,17 @@ func init() {
 }
 
 func main() {
+	InitArgs()
+
 	err := glfw.Init()
 	if err != nil {
-		panic(err)
+		log.Fatalf("FATAL Failed to initialize GLFW: %s", err)
 	}
 	defer glfw.Terminate()
 
 	window, err := glfw.CreateWindow(640, 480, "Testing", nil, nil)
 	if err != nil {
-		panic(err)
+		log.Fatalf("FATAL Failed to create window: %s", err)
 	}
 
 	window.MakeContextCurrent()

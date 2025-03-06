@@ -4,4 +4,6 @@ go 1.23.6
 
 require (
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20250301202403-da16c1255728
+	github.com/mattn/go-shellwords v1.0.12
+	github.com/spf13/pflag v1.0.6
 )
