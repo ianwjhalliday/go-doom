@@ -13,8 +13,8 @@ func init() {
 }
 
 func main() {
-	InitArgs()
-
+	initArgs()
+	initConfig()
 	err := glfw.Init()
 	if err != nil {
 		log.Fatalf("FATAL Failed to initialize GLFW: %s", err)

@@ -47,9 +47,9 @@ type Arguments struct {
 	LogLevel string
 }
 
-var Args = Arguments{}
+var args = Arguments{}
 
-func InitArgs() {
+func initArgs() {
 	preprocessArgs()
 
 	homeDir, err := os.UserHomeDir()
@@ -58,44 +58,44 @@ func InitArgs() {
 	}
 	defaultConfigPath := path.Join(homeDir, ".doomrc")
 
-	pflag.BoolVar(&Args.AltDeath, "altdeath", false, "enable deathmatch 2.0 mode (item respawn and normal weapon ammo)")
-	pflag.BoolVar(&Args.Avg, "avg", false, "enable Austin Virtual Gaming mode (same as --timer 20)")
-	pflag.BoolVar(&Args.CDROM, "cdrom", false, "defunct: enabled running game directly from CD-ROM")
-	pflag.BoolVar(&Args.ComDev, "comdev", false, "enable commercial game (Doom II) development mode")
-	pflag.StringVar(&Args.Config, "config", defaultConfigPath, "use configuration file `<path>`")
-	pflag.BoolVar(&Args.Deathmatch, "deathmatch", false, "enable deathmatch mode")
-	pflag.BoolVar(&Args.DebugFile, "debugfile", false, "output tic debug info to debug0.txt")
-	pflag.BoolVar(&Args.DevParm, "devparm", false, "enable developer mode")
-	pflag.BoolVar(&Args.Dup, "dup", false, "defunct: enabled tic duplication to save network bandwidth at cost of movement accuracy")
-	pflag.IntVar(&Args.Episode, "episode", 0, "start episode `<num>`. Equivalent to -warp \"1 num\"")
-	pflag.BoolVar(&Args.ExtraTic, "extratic", true, "defunct: enabled extra tic data over network for resilience at cost of bandwidth")
-	pflag.BoolVar(&Args.Fast, "fast", false, "enable fast monsters mode. Requires -warp")
-	pflag.StringArrayVar(&Args.Files, "file", []string{}, "load additional WADs and lump `<file>`s. Specify multiple times for multiple files")
-	pflag.IntVar(&Args.LoadGame, "loadgame", -1, "load the savegame at slot `<num>` (0-5)")
-	pflag.IntVar(&Args.MaxDemo, "maxdemo", 0, "set demo recording maximum file `<size>` in KiB")
-	pflag.BoolVar(&Args.Net, "net", false, "defunct: enabled networking in Doom 1.0 and 1.1")
-	pflag.BoolVar(&Args.NoDraw, "nodraw", false, "disable graphics rendering for -timedemo performance testing")
-	pflag.BoolVar(&Args.NoMonsters, "nomonsters", false, "disable monster spawning. Requires -warp")
-	pflag.StringVar(&Args.PlayDemo, "playdemo", "", "play demo recording `<lump>`")
-	pflag.IntVar(&Args.Port, "port", 0, "specify network `port` for UDP connection")
-	pflag.StringVar(&Args.Record, "record", "", "record demo to a lump `<file>`")
-	pflag.BoolVar(&Args.RegDev, "regdev", false, "enable registered game (Doom) development mode")
-	pflag.BoolVar(&Args.Respawn, "respawn", false, "enable monster respawning. Requires -warp")
-	pflag.BoolVar(&Args.ShDev, "shdev", false, "enable shareware game (Doom Shareware) development mode")
-	pflag.IntVar(&Args.Skill, "skill", 0, "start game immediately at skill `<level>` (1-5). Can use with -warp")
-	pflag.BoolVar(&Args.StatCopy, "statcopy", false, "defunct: enabled statistics copying to a stats driver program")
-	pflag.StringVar(&Args.TimeDemo, "timedemo", "", "play demo `<lump>` and measure avg frame rate with 35 fps cap removed")
-	pflag.IntVar(&Args.Timer, "timer", 0, "exit levels after `<num>` minutes. Requires -deathmatch or -altdeath")
-	pflag.IntVar(&Args.Turbo, "turbo", 0, "scale player movement speed by `<num>` percent (10% - 400%)")
-	pflag.StringVar(&Args.Warp, "warp", "", "warp to level `\"<episode> <map>\"` (Doom) or <map> (Doom II)")
-	pflag.StringVar(&Args.Wart, "wart", "", "defunct: developer mode warped to `<map>` loaded from a WAD file")
+	pflag.BoolVar(&args.AltDeath, "altdeath", false, "enable deathmatch 2.0 mode (item respawn and normal weapon ammo)")
+	pflag.BoolVar(&args.Avg, "avg", false, "enable Austin Virtual Gaming mode (same as --timer 20)")
+	pflag.BoolVar(&args.CDROM, "cdrom", false, "defunct: enabled running game directly from CD-ROM")
+	pflag.BoolVar(&args.ComDev, "comdev", false, "enable commercial game (Doom II) development mode")
+	pflag.StringVar(&args.Config, "config", defaultConfigPath, "use configuration file `<path>`")
+	pflag.BoolVar(&args.Deathmatch, "deathmatch", false, "enable deathmatch mode")
+	pflag.BoolVar(&args.DebugFile, "debugfile", false, "output tic debug info to debug0.txt")
+	pflag.BoolVar(&args.DevParm, "devparm", false, "enable developer mode")
+	pflag.BoolVar(&args.Dup, "dup", false, "defunct: enabled tic duplication to save network bandwidth at cost of movement accuracy")
+	pflag.IntVar(&args.Episode, "episode", 0, "start episode `<num>`. Equivalent to -warp \"1 num\"")
+	pflag.BoolVar(&args.ExtraTic, "extratic", true, "defunct: enabled extra tic data over network for resilience at cost of bandwidth")
+	pflag.BoolVar(&args.Fast, "fast", false, "enable fast monsters mode. Requires -warp")
+	pflag.StringArrayVar(&args.Files, "file", []string{}, "load additional WADs and lump `<file>`s. Specify multiple times for multiple files")
+	pflag.IntVar(&args.LoadGame, "loadgame", -1, "load the savegame at slot `<num>` (0-5)")
+	pflag.IntVar(&args.MaxDemo, "maxdemo", 0, "set demo recording maximum file `<size>` in KiB")
+	pflag.BoolVar(&args.Net, "net", false, "defunct: enabled networking in Doom 1.0 and 1.1")
+	pflag.BoolVar(&args.NoDraw, "nodraw", false, "disable graphics rendering for -timedemo performance testing")
+	pflag.BoolVar(&args.NoMonsters, "nomonsters", false, "disable monster spawning. Requires -warp")
+	pflag.StringVar(&args.PlayDemo, "playdemo", "", "play demo recording `<lump>`")
+	pflag.IntVar(&args.Port, "port", 0, "specify network `port` for UDP connection")
+	pflag.StringVar(&args.Record, "record", "", "record demo to a lump `<file>`")
+	pflag.BoolVar(&args.RegDev, "regdev", false, "enable registered game (Doom) development mode")
+	pflag.BoolVar(&args.Respawn, "respawn", false, "enable monster respawning. Requires -warp")
+	pflag.BoolVar(&args.ShDev, "shdev", false, "enable shareware game (Doom Shareware) development mode")
+	pflag.IntVar(&args.Skill, "skill", 0, "start game immediately at skill `<level>` (1-5). Can use with -warp")
+	pflag.BoolVar(&args.StatCopy, "statcopy", false, "defunct: enabled statistics copying to a stats driver program")
+	pflag.StringVar(&args.TimeDemo, "timedemo", "", "play demo `<lump>` and measure avg frame rate with 35 fps cap removed")
+	pflag.IntVar(&args.Timer, "timer", 0, "exit levels after `<num>` minutes. Requires -deathmatch or -altdeath")
+	pflag.IntVar(&args.Turbo, "turbo", 0, "scale player movement speed by `<num>` percent (10% - 400%)")
+	pflag.StringVar(&args.Warp, "warp", "", "warp to level `\"<episode> <map>\"` (Doom) or <map> (Doom II)")
+	pflag.StringVar(&args.Wart, "wart", "", "defunct: developer mode warped to `<map>` loaded from a WAD file")
 
-	pflag.StringVar(&Args.LogLevel, "log-level", "info", "Set the log `<level>` (debug, info, warn, error, none)")
+	pflag.StringVar(&args.LogLevel, "log-level", "info", "Set the log `<level>` (debug, info, warn, error, none)")
 
 	pflag.Parse()
 
-	slog.SetLogLoggerLevel(logLevel(Args.LogLevel))
-	slog.Debug("Parsed", "arguments", Args)
+	slog.SetLogLoggerLevel(logLevel(args.LogLevel))
+	slog.Debug("initArgs", "args", args)
 }
 
 func logLevel(level string) slog.Level {
