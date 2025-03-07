@@ -2,13 +2,16 @@ package main
 
 import (
 	"bufio"
-	"github.com/mattn/go-shellwords"
-	"github.com/spf13/pflag"
 	"log"
 	"log/slog"
 	"math"
 	"os"
 	"path"
+
+	"github.com/lmittmann/tint"
+	"github.com/mattn/go-isatty"
+	"github.com/mattn/go-shellwords"
+	"github.com/spf13/pflag"
 )
 
 type Arguments struct {
@@ -100,7 +103,16 @@ func initArgs() {
 		loadGameFlag.Value.Set("-1")
 	}
 
-	slog.SetLogLoggerLevel(logLevel(args.LogLevel))
+	// Colorize slog output and set log level
+	w := os.Stderr
+	slog.SetDefault(slog.New(
+		tint.NewHandler(w, &tint.Options{
+			Level:      logLevel(args.LogLevel),
+			TimeFormat: "2006-01-02 15:04:05.000",
+			NoColor:    !isatty.IsTerminal(w.Fd()),
+		}),
+	))
+
 	slog.Debug("initArgs", "args", args)
 }
 
