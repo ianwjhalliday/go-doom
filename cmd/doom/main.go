@@ -3,8 +3,10 @@ package main
 import (
 	"log"
 	"runtime"
+
+	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/ianwjhalliday/go-doom/internal/cmd"
 )
-import "github.com/go-gl/glfw/v3.3/glfw"
 
 func init() {
 	// This is needed to arrange that main() runs on main thread.
@@ -13,8 +15,9 @@ func init() {
 }
 
 func main() {
-	initArgs()
-	initConfig()
+	cmd.InitArgs()
+	cmd.InitConfig()
+
 	err := glfw.Init()
 	if err != nil {
 		log.Fatalf("FATAL Failed to initialize GLFW: %s", err)

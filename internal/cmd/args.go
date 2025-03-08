@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"bufio"
@@ -52,7 +52,7 @@ type Arguments struct {
 
 var args = Arguments{}
 
-func initArgs() {
+func InitArgs() {
 	preprocessArgs()
 
 	homeDir, err := os.UserHomeDir()
@@ -113,7 +113,7 @@ func initArgs() {
 		}),
 	))
 
-	slog.Debug("initArgs", "args", args)
+	slog.Debug("InitArgs", "args", args)
 }
 
 func logLevel(level string) slog.Level {

@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"fmt"
@@ -92,13 +92,13 @@ func Fatal(msg string, args ...interface{}) {
 	os.Exit(1)
 }
 
-func initConfig() {
+func InitConfig() {
 	identifyVersion()
 	initConfigFromArgs()
 
 	// TODO: validate args and set Config accordingly
 
-	slog.Debug("initConfig", "Config", Config)
+	slog.Debug("InitConfig", "Config", Config)
 }
 
 func identifyVersion() {
