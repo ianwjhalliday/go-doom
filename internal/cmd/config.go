@@ -96,8 +96,6 @@ func InitConfig() {
 	identifyVersion()
 	initConfigFromArgs()
 
-	// TODO: validate args and set Config accordingly
-
 	slog.Debug("InitConfig", "Config", Config)
 }
 
@@ -116,10 +114,7 @@ func identifyVersion() {
 		Config.WadFiles = append(Config.WadFiles, devmaps+"data_se/texture1.lmp")
 		Config.WadFiles = append(Config.WadFiles, devmaps+"data_se/pnames.lmp")
 		Config.BaseDefaultConfigFile = devdata + "default.cfg"
-		return
-	}
-
-	if args.RegDev {
+	} else if args.RegDev {
 		Config.GameMode = GameModeRegistered
 		Config.DevParm = true
 		Config.WadFiles = append(Config.WadFiles, devdata+"doom.wad")
@@ -127,69 +122,78 @@ func identifyVersion() {
 		Config.WadFiles = append(Config.WadFiles, devmaps+"data_se/texture2.lmp")
 		Config.WadFiles = append(Config.WadFiles, devmaps+"data_se/pnames.lmp")
 		Config.BaseDefaultConfigFile = devdata + "default.cfg"
-		return
-	}
-
-	if args.ComDev {
+	} else if args.ComDev {
 		Config.GameMode = GameModeCommercial
 		Config.DevParm = true
 		Config.WadFiles = append(Config.WadFiles, devdata+"doom2.wad")
 		Config.WadFiles = append(Config.WadFiles, devmaps+"cdata/texture1.lmp")
 		Config.WadFiles = append(Config.WadFiles, devmaps+"cdata/pnames.lmp")
 		Config.BaseDefaultConfigFile = devdata + "default.cfg"
-		return
+	} else {
+		// Check for IWADs
+		wadPath := "."
+		if wp := os.Getenv("DOOMWADDIR"); wp != "" {
+			wadPath = wp
+		}
+
+		wadDoom2 := path.Join(wadPath, "doom2.wad")
+		wadDoomU := path.Join(wadPath, "doomu.wad")
+		wadDoom := path.Join(wadPath, "doom.wad")
+		wadDoom1 := path.Join(wadPath, "doom1.wad")
+		wadPlutonia := path.Join(wadPath, "plutonia.wad")
+		wadTNT := path.Join(wadPath, "tnt.wad")
+		wadDoom2F := path.Join(wadPath, "doom2f.wad")
+
+		// Check for IWADs
+		exists := func(filePath string) bool {
+			_, err := os.Stat(filePath)
+			return err == nil
+		}
+
+		switch {
+		case exists(wadDoom2F):
+			Config.GameMode = GameModeCommercial
+			// C'est ridicule!
+			// Let's handle languages in config files, okay?
+			Config.Language = LanguageFrench
+			Config.WadFiles = append(Config.WadFiles, wadDoom2F)
+			slog.Info("French version.")
+		case exists(wadDoom2):
+			Config.GameMode = GameModeCommercial
+			Config.WadFiles = append(Config.WadFiles, wadDoom2)
+		case exists(wadPlutonia):
+			Config.GameMode = GameModeCommercial
+			Config.WadFiles = append(Config.WadFiles, wadPlutonia)
+		case exists(wadTNT):
+			Config.GameMode = GameModeCommercial
+			Config.WadFiles = append(Config.WadFiles, wadTNT)
+		case exists(wadDoomU):
+			Config.GameMode = GameModeRetail
+			Config.WadFiles = append(Config.WadFiles, wadDoomU)
+		case exists(wadDoom):
+			Config.GameMode = GameModeRegistered
+			Config.WadFiles = append(Config.WadFiles, wadDoom)
+		case exists(wadDoom1):
+			Config.GameMode = GameModeShareware
+			Config.WadFiles = append(Config.WadFiles, wadDoom1)
+		default:
+			Config.GameMode = GameModeIndetermined
+			slog.Error("Game mode indeterminate. IWAD not found.")
+			// We don't abort. Let's see what the PWAD contains.
+		}
 	}
 
-	// Check for IWADs
-	wadPath := "."
-	if wp := os.Getenv("DOOMWADDIR"); wp != "" {
-		wadPath = wp
-	}
-
-	wadDoom2 := path.Join(wadPath, "doom2.wad")
-	wadDoomU := path.Join(wadPath, "doomu.wad")
-	wadDoom := path.Join(wadPath, "doom.wad")
-	wadDoom1 := path.Join(wadPath, "doom1.wad")
-	wadPlutonia := path.Join(wadPath, "plutonia.wad")
-	wadTNT := path.Join(wadPath, "tnt.wad")
-	wadDoom2F := path.Join(wadPath, "doom2f.wad")
-
-	// Check for IWADs
-	exists := func(filePath string) bool {
-		_, err := os.Stat(filePath)
-		return err == nil
-	}
-
-	switch {
-	case exists(wadDoom2F):
-		Config.GameMode = GameModeCommercial
-		// C'est ridicule!
-		// Let's handle languages in config files, okay?
-		Config.Language = LanguageFrench
-		Config.WadFiles = append(Config.WadFiles, wadDoom2F)
-		slog.Info("French version.")
-	case exists(wadDoom2):
-		Config.GameMode = GameModeCommercial
-		Config.WadFiles = append(Config.WadFiles, wadDoom2)
-	case exists(wadPlutonia):
-		Config.GameMode = GameModeCommercial
-		Config.WadFiles = append(Config.WadFiles, wadPlutonia)
-	case exists(wadTNT):
-		Config.GameMode = GameModeCommercial
-		Config.WadFiles = append(Config.WadFiles, wadTNT)
-	case exists(wadDoomU):
-		Config.GameMode = GameModeRetail
-		Config.WadFiles = append(Config.WadFiles, wadDoomU)
-	case exists(wadDoom):
-		Config.GameMode = GameModeRegistered
-		Config.WadFiles = append(Config.WadFiles, wadDoom)
-	case exists(wadDoom1):
-		Config.GameMode = GameModeShareware
-		Config.WadFiles = append(Config.WadFiles, wadDoom1)
-	default:
-		Config.GameMode = GameModeIndetermined
-		slog.Error("Game mode indeterminate. IWAD not found.")
-		// We don't abort. Let's see what the PWAD contains.
+	switch Config.GameMode {
+	case GameModeRetail:
+		slog.Info(fmt.Sprintf("The Ultimate DOOM Startup v%d.%d", Version/100, Version%100))
+	case GameModeShareware:
+		slog.Info(fmt.Sprintf("DOOM Shareware Startup v%d.%d", Version/100, Version%100))
+	case GameModeRegistered:
+		slog.Info(fmt.Sprintf("DOOM Registered Startup v%d.%d", Version/100, Version%100))
+	case GameModeCommercial:
+		slog.Info(fmt.Sprintf("DOOM 2: Hell on Earth v%d.%d", Version/100, Version%100))
+	case GameModeIndetermined:
+		slog.Info(fmt.Sprintf("Public DOOM - v%d.%d", Version/100, Version%100))
 	}
 }
 
@@ -202,6 +206,9 @@ func initConfigFromArgs() {
 
 	// DevParm mode from explicit --devparm flag or implicit from shdev/regdev/comdev mode
 	Config.DevParm = Config.DevParm || args.DevParm
+	if Config.DevParm {
+		slog.Info("Developer mode enabled.")
+	}
 
 	// Defunct flags
 	if args.CDROM {
