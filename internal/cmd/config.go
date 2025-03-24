@@ -105,7 +105,7 @@ func identifyVersion() {
 	if err != nil {
 		Fatal(fmt.Sprintf("Failed to get user home directory: %s", err))
 	}
-	Config.BaseDefaultConfigFile = path.Join(homeDir, ".doomrc")
+	Config.BaseDefaultConfigFile = path.Join(homeDir, ".doom.yaml")
 
 	if args.ShDev {
 		Config.GameMode = GameModeShareware

@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/ianwjhalliday/go-doom/internal/cmd"
+	"github.com/ianwjhalliday/go-doom/internal/game"
 )
 
 func init() {
@@ -17,6 +18,8 @@ func init() {
 func main() {
 	cmd.InitArgs()
 	cmd.InitConfig()
+	game.InitSettings(cmd.Config.ConfigFile)
+	defer game.SaveSettings(cmd.Config.ConfigFile) // TODO: This won't save settings when we use os.Exit() to exit the program
 
 	err := glfw.Init()
 	if err != nil {
