@@ -17,14 +17,14 @@ func init() {
 }
 
 func main() {
-	cmd.InitArgs()
-	cmd.InitConfig()
-	game.InitSettings(cmd.Config.ConfigFile)
-	defer game.SaveSettings(cmd.Config.ConfigFile) // TODO: This won't save settings when we use os.Exit() to exit the program
+	args := cmd.InitArguments()
+	game.InitConfig(args)
+	game.InitSettings(game.Config.ConfigFile)
+	defer game.SaveSettings(game.Config.ConfigFile) // TODO: This won't save settings when we use os.Exit() to exit the program
 
-	engine.InitFiles(cmd.Config.WadFiles)
-	game.VetFiles(&cmd.Config)
-	game.PrintBanner(&cmd.Config)
+	engine.InitFiles(game.Config.WadFiles)
+	game.VetFiles(&game.Config)
+	game.PrintBanner(&game.Config)
 
 	err := glfw.Init()
 	if err != nil {

@@ -1,7 +1,8 @@
-package cmd
+package game
 
 import (
 	"fmt"
+	"github.com/ianwjhalliday/go-doom/internal/cmd"
 	"log/slog"
 	"os"
 	"path"
@@ -94,14 +95,14 @@ func Fatal(msg string, args ...interface{}) {
 	os.Exit(1)
 }
 
-func InitConfig() {
-	identifyVersion()
-	initConfigFromArgs()
+func InitConfig(args *cmd.Arguments) {
+	identifyVersion(args)
+	initConfigFromArgs(args)
 
 	slog.Debug("InitConfig", "Config", Config)
 }
 
-func identifyVersion() {
+func identifyVersion(args *cmd.Arguments) {
 	// Check for devparm modes first
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
@@ -201,7 +202,7 @@ func identifyVersion() {
 	}
 }
 
-func initConfigFromArgs() {
+func initConfigFromArgs(args *cmd.Arguments) {
 	// Config file from default home location or shdev/regdev/comdev mode unless overridden by --config flag
 	Config.ConfigFile = Config.BaseDefaultConfigFile
 	if args.Config != "" {

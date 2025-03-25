@@ -50,9 +50,7 @@ type Arguments struct {
 	LogLevel string
 }
 
-var args = Arguments{}
-
-func InitArgs() {
+func InitArguments() *Arguments {
 	preprocessArgs()
 
 	homeDir, err := os.UserHomeDir()
@@ -60,6 +58,8 @@ func InitArgs() {
 		log.Fatalf("FATAL Failed to get user home directory: %s", err)
 	}
 	defaultConfigPath := path.Join(homeDir, ".doomrc")
+
+	var args = Arguments{}
 
 	pflag.BoolVar(&args.AltDeath, "altdeath", false, "enable deathmatch 2.0 mode (item respawn and normal weapon ammo)")
 	pflag.BoolVar(&args.Avg, "avg", false, "enable Austin Virtual Gaming mode (same as --timer 20)")
@@ -113,7 +113,9 @@ func InitArgs() {
 		}),
 	))
 
-	slog.Debug("InitArgs", "args", args)
+	slog.Debug("InitArguments", "args", args)
+
+	return &args
 }
 
 func logLevel(level string) slog.Level {
