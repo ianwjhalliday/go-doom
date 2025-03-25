@@ -149,7 +149,7 @@ func InitSettings(configPath string) {
 
 	decoder := yaml.NewDecoder(file)
 	if err := decoder.Decode(&Settings); err != nil {
-		slog.Error("Failed to decode config file", "err", err)
+		slog.Error("Failed to decode config file", "configPath", configPath, "err", err)
 		os.Exit(1)
 	}
 	slog.Debug("Loaded settings from config file", "configPath", configPath)
