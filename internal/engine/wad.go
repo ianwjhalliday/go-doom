@@ -26,8 +26,11 @@ var Lumps []Lump
 func InitFiles(filePaths []string) {
 	Lumps = make([]Lump, 0, 3072) // DOOM2.WAD has 2919 lumps
 
+	slog.Info("Reading files...")
+
 	// TODO: Support tilde for file reloading
 	for _, filePath := range filePaths {
+		slog.Info("  " + filePath)
 		if strings.HasSuffix(strings.ToLower(filePath), ".wad") {
 			addWad(filePath)
 		} else {
@@ -91,7 +94,7 @@ func addWad(filePath string) {
 			Data: fileBytes[lump.FilePosition : lump.FilePosition+lump.Size],
 		})
 	}
-	slog.Info("Loaded WAD", "file", filePath, "lumps", wadInfo.NumLumps)
+	slog.Debug("  Loaded WAD", "file", filePath, "lumps", wadInfo.NumLumps)
 }
 
 func addLump(filePath string) {
@@ -107,5 +110,18 @@ func addLump(filePath string) {
 		Name: name,
 		Data: fileBytes,
 	})
-	slog.Info("Loaded lump", "file", filePath)
+	slog.Debug("  Loaded lump", "file", filePath)
+}
+
+func LookupLumpNum(name string) (int, bool) {
+	name = strings.ToUpper(name)
+
+	// scan backwards so patch lump files take precedence
+	for i := len(Lumps) - 1; i >= 0; i-- {
+		if Lumps[i].Name == name {
+			return i, true
+		}
+	}
+
+	return -1, false
 }

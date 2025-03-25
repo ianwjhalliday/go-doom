@@ -15,12 +15,14 @@ const (
 	devmaps = "devmaps"
 )
 
+type GameMode int
+
 const (
-	GameModeShareware    = iota // DOOM 1 shareware, E1 M9
-	GameModeRegistered          // DOOM 1 registered, E3 M27
-	GameModeRetail              // DOOM 1 retail, E4 M36
-	GameModeCommercial          // DOOM 2 retail, E1 M34
-	GameModeIndetermined        // Well, no IWAD found.
+	GameModeShareware    GameMode = iota // DOOM 1 shareware, E1 M9
+	GameModeRegistered                   // DOOM 1 registered, E3 M27
+	GameModeRetail                       // DOOM 1 retail, E4 M36
+	GameModeCommercial                   // DOOM 2 retail, E1 M34
+	GameModeIndetermined                 // Well, no IWAD found.
 )
 
 const (
@@ -51,7 +53,7 @@ const (
 )
 
 type GameConfig struct {
-	GameMode int
+	GameMode GameMode
 	Language int
 
 	BaseDefaultConfigFile string
@@ -149,6 +151,8 @@ func identifyVersion() {
 			_, err := os.Stat(filePath)
 			return err == nil
 		}
+
+		// TODO: Add a new --iwad flag to explicitly specify the desired IWAD to start with.
 
 		switch {
 		case exists(wadDoom2F):

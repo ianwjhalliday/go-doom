@@ -23,6 +23,8 @@ func main() {
 	defer game.SaveSettings(cmd.Config.ConfigFile) // TODO: This won't save settings when we use os.Exit() to exit the program
 
 	engine.InitFiles(cmd.Config.WadFiles)
+	game.VetFiles(&cmd.Config)
+	game.PrintBanner(&cmd.Config)
 
 	err := glfw.Init()
 	if err != nil {
