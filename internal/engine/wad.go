@@ -3,10 +3,12 @@ package engine
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
+	"unsafe"
 )
 
 type Lump struct {
@@ -124,4 +126,14 @@ func LookupLumpNum(name string) (int, bool) {
 	}
 
 	return -1, false
+}
+
+func LumpByName[T any](name string) *T {
+	num, found := LookupLumpNum(name)
+	if !found {
+		slog.Error(fmt.Sprintf("LumpByName: %q not found!", name))
+		os.Exit(1)
+	}
+
+	return (*T)(unsafe.Pointer(&Lumps[num].Data[0]))
 }

@@ -3,6 +3,7 @@ package engine
 import (
 	"github.com/ianwjhalliday/go-doom/internal/engine/constants"
 	"github.com/ianwjhalliday/go-doom/internal/engine/glfwimpl"
+	"unsafe"
 )
 
 var screens [4][constants.ScreenWidth * constants.ScreenHeight]uint8
@@ -119,4 +120,48 @@ var gammaTable = [5][256]uint8{
 		239, 240, 240, 241, 241, 242, 242, 243, 243, 244, 244, 245, 245, 246, 246, 247,
 		247, 248, 248, 249, 249, 250, 250, 251, 251, 252, 252, 253, 254, 254, 255, 255,
 	},
+}
+
+type Patch struct {
+	Width      int16    // bounding box size
+	Height     int16    //
+	LeftOffset int16    // pixels to the left of origin
+	TopOffset  int16    // pixels below the origin
+	ColumnOfs  [8]int32 // [8] is false, [width] used instead. The first Column is &ColumnOfs[width]
+}
+
+// Post is a run of non-masked source pixels
+type Post struct {
+	TopDelta byte // -1 is the last post in a column
+	Length   byte // length data bytes follows
+}
+
+// Column is a list of 0 or more Post, (byte)-1 terminated
+type Column Post // TODO This is not going to work without unsafe pointer stuff, consider more go idiomatic way
+
+// DrawPatch
+// Masks a column based masked pic to the screen.
+func DrawPatch(x, y, screen int, patch *Patch) {
+	y -= int(patch.TopOffset)
+	x -= int(patch.LeftOffset)
+
+	destTop := unsafe.Pointer(&screens[screen][y*constants.ScreenWidth+x])
+	columnOfs := unsafe.Slice(&patch.ColumnOfs[0], int(patch.Width))
+
+	for col := 0; col < int(patch.Width); col, x, destTop = col+1, x+1, unsafe.Add(destTop, 1) {
+		column := (*Column)(unsafe.Add(unsafe.Pointer(patch), columnOfs[col]))
+
+		// step through the posts in a column
+		for column.TopDelta != 0xff {
+			source := unsafe.Add(unsafe.Pointer(column), 3)
+			dest := unsafe.Add(destTop, int(column.TopDelta)*constants.ScreenWidth)
+
+			for count := column.Length; count != 0; count-- {
+				*(*byte)(dest) = *(*byte)(source)
+				source = unsafe.Add(source, 1)
+				dest = unsafe.Add(dest, constants.ScreenWidth)
+			}
+			column = (*Column)(unsafe.Add(unsafe.Pointer(column), column.Length+4))
+		}
+	}
 }
