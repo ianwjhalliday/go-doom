@@ -2,6 +2,7 @@ package system
 
 import (
 	"fmt"
+	"github.com/ianwjhalliday/go-doom/internal/engine/constants"
 	"log/slog"
 	"os"
 	"runtime"
@@ -10,9 +11,6 @@ import (
 	"github.com/go-gl/gl/v3.3-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
 )
-
-const ScreenWidth = 320
-const ScreenHeight = 200
 
 const screenVertexShaderSource = `
 #version 330 core
@@ -75,14 +73,14 @@ func initGlfwWindow() {
 		glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
 	}
 
-	window, err = glfw.CreateWindow(3*ScreenWidth, 3*ScreenWidth*3/4, "go-doom", nil, nil)
+	window, err = glfw.CreateWindow(3*constants.ScreenWidth, 3*constants.ScreenWidth*3/4, "go-doom", nil, nil)
 	if err != nil {
 		slog.Error("InitGraphics: Could not create window", "err", err)
 		glfw.Terminate()
 		os.Exit(1)
 	}
 
-	window.SetSizeLimits(ScreenWidth, ScreenWidth*3/4, glfw.DontCare, glfw.DontCare)
+	window.SetSizeLimits(constants.ScreenWidth, constants.ScreenWidth*3/4, glfw.DontCare, glfw.DontCare)
 	window.SetAspectRatio(4, 3)
 	window.SetInputMode(glfw.CursorMode, glfw.CursorDisabled)
 
@@ -223,14 +221,12 @@ func compileShader(source string, shaderType uint32) (uint32, error) {
 	return shader, nil
 }
 
-var screens [4][ScreenWidth * ScreenHeight]uint8
-
-func finishUpdate() {
+func FinishUpdate(screen *[constants.ScreenWidth * constants.ScreenHeight]uint8) {
 	gl.UseProgram(shaderProgram)
 
 	gl.ActiveTexture(gl.TEXTURE0)
 	gl.BindTexture(gl.TEXTURE_2D, screenTexture)
-	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RED, ScreenWidth, ScreenHeight, 0, gl.RED, gl.UNSIGNED_BYTE, gl.Ptr(&screens[0][0]))
+	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RED, constants.ScreenWidth, constants.ScreenHeight, 0, gl.RED, gl.UNSIGNED_BYTE, gl.Ptr(&screen[0]))
 	gl.ActiveTexture(gl.TEXTURE1)
 	gl.BindTexture(gl.TEXTURE_1D, paletteTexture)
 
@@ -241,23 +237,18 @@ func finishUpdate() {
 	window.SwapBuffers()
 }
 
-// TODO: Move palette to engine video code
-var palette [3 * 256]uint8
-
-func setPalette(pal *[3 * 256]uint8) {
-	// TODO: Adjust palette by gamme, but do it in engine video code, not GLFW/GL code, and pass result to this function
+func SetPalette(palette *[3 * 256]uint8) {
 	gl.BindTexture(gl.TEXTURE_1D, paletteTexture)
 	gl.TexImage1D(gl.TEXTURE_1D, 0, gl.RGBA, 256, 0, gl.RGB, gl.UNSIGNED_BYTE, gl.Ptr(&palette[0]))
 	gl.TexParameteri(gl.TEXTURE_1D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
 	gl.TexParameteri(gl.TEXTURE_1D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
 }
 
-// TempGlfwLoop is a placeholder until the proper D_DoomLoop with tic updates etc is implemented.
-func TempGlfwLoop() {
-	setPalette(&palette)
+func WindowShouldClose() bool {
+	return window.ShouldClose()
+}
 
-	for !window.ShouldClose() {
-		finishUpdate()
-		glfw.PollEvents()
-	}
+// PollInputEvents TODO: move to GLFW input code
+func PollInputEvents() {
+	glfw.PollEvents()
 }
