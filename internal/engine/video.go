@@ -2,17 +2,17 @@ package engine
 
 import (
 	"github.com/ianwjhalliday/go-doom/internal/engine/constants"
-	"github.com/ianwjhalliday/go-doom/internal/engine/system"
+	"github.com/ianwjhalliday/go-doom/internal/engine/glfwimpl"
 )
 
 var screens [4][constants.ScreenWidth * constants.ScreenHeight]uint8
 
 func InitGraphics() {
-	system.InitGraphics()
+	glfwimpl.InitGraphics()
 }
 
 func ShutdownGraphics() {
-	system.ShutdownGraphics()
+	glfwimpl.ShutdownGraphics()
 }
 
 func SetPalette(palette *[3 * 256]uint8, gammaLevel int) {
@@ -21,7 +21,7 @@ func SetPalette(palette *[3 * 256]uint8, gammaLevel int) {
 		gammaCorrectedPalette[i] = gammaTable[gammaLevel][palette[i]]
 	}
 
-	system.SetPalette(&gammaCorrectedPalette)
+	glfwimpl.SetPalette(&gammaCorrectedPalette)
 }
 
 var gammaTable = [5][256]uint8{
