@@ -26,7 +26,7 @@ var Lumps []Lump
 func InitFiles(filePaths []string) {
 	Lumps = make([]Lump, 0, 3072) // DOOM2.WAD has 2919 lumps
 
-	slog.Info("Reading files...")
+	slog.Info("InitFiles: Reading files...")
 
 	// TODO: Support tilde for file reloading
 	for _, filePath := range filePaths {
