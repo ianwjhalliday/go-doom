@@ -1,10 +1,8 @@
-package glfwimpl
+package engine
 
 import (
 	"fmt"
-	"github.com/ianwjhalliday/go-doom/internal/engine/constants"
 	"log/slog"
-	"os"
 	"runtime"
 	"strings"
 
@@ -48,20 +46,19 @@ var paletteTexture uint32
 var screenQuadVAO uint32
 var shaderProgram uint32
 
-func InitGraphics() {
-	initGlfwWindow()
+func InitGraphicsGLFW() {
+	initGLFWWindow()
 	initGLScreen()
 }
 
-func ShutdownGraphics() {
+func ShutdownGraphicsGLFW() {
 	glfw.Terminate()
 }
 
-func initGlfwWindow() {
+func initGLFWWindow() {
 	err := glfw.Init()
 	if err != nil {
-		slog.Error("InitGraphics: Could not initialize GLFW:", "err", err)
-		os.Exit(1)
+		FatalError("InitGraphics: Could not initialize GLFW:", "err", err)
 	}
 	slog.Info(fmt.Sprintf("InitGraphics: GLFW version %s", glfw.GetVersionString()))
 
@@ -73,14 +70,12 @@ func initGlfwWindow() {
 		glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
 	}
 
-	window, err = glfw.CreateWindow(3*constants.ScreenWidth, 3*constants.ScreenWidth*3/4, "go-doom", nil, nil)
+	window, err = glfw.CreateWindow(3*ScreenWidth, 3*ScreenWidth*3/4, "go-doom", nil, nil)
 	if err != nil {
-		slog.Error("InitGraphics: Could not create window", "err", err)
-		glfw.Terminate()
-		os.Exit(1)
+		FatalError("InitGraphics: Could not create window", "err", err)
 	}
 
-	window.SetSizeLimits(constants.ScreenWidth, constants.ScreenWidth*3/4, glfw.DontCare, glfw.DontCare)
+	window.SetSizeLimits(ScreenWidth, ScreenWidth*3/4, glfw.DontCare, glfw.DontCare)
 	window.SetAspectRatio(4, 3)
 	window.SetInputMode(glfw.CursorMode, glfw.CursorDisabled)
 
@@ -94,9 +89,7 @@ func initGlfwWindow() {
 
 func initGLScreen() {
 	if err := gl.Init(); err != nil {
-		slog.Error("InitGraphics: Could not initialize OpenGL", "err", err)
-		glfw.Terminate()
-		os.Exit(1)
+		FatalError("InitGraphics: Could not initialize OpenGL", "err", err)
 	}
 
 	version := gl.GoStr(gl.GetString(gl.VERSION))
@@ -104,23 +97,17 @@ func initGLScreen() {
 
 	vertexShader, err := compileShader(screenVertexShaderSource, gl.VERTEX_SHADER)
 	if err != nil {
-		slog.Error("InitGraphics: Failed to compile vertex shader", "err", err)
-		glfw.Terminate()
-		os.Exit(1)
+		FatalError("InitGraphics: Failed to compile vertex shader", "err", err)
 	}
 
 	fragmentShader, err := compileShader(screenFragmentShaderSource, gl.FRAGMENT_SHADER)
 	if err != nil {
-		slog.Error("InitGraphics: Failed to compile fragment shader", "err", err)
-		glfw.Terminate()
-		os.Exit(1)
+		FatalError("InitGraphics: Failed to compile fragment shader", "err", err)
 	}
 
 	shaderProgram, err = newShaderProgram(vertexShader, fragmentShader)
 	if err != nil {
-		slog.Error("InitGraphics: Failed to create shaders program", "err", err)
-		glfw.Terminate()
-		os.Exit(1)
+		FatalError("InitGraphics: Failed to create shaders program", "err", err)
 	}
 
 	// Set up screen quad with ortho projection for rendering screen texture to window
@@ -221,12 +208,12 @@ func compileShader(source string, shaderType uint32) (uint32, error) {
 	return shader, nil
 }
 
-func FinishUpdate(screen *[constants.ScreenWidth * constants.ScreenHeight]uint8) {
+func FinishUpdate(screen *[ScreenWidth * ScreenHeight]uint8) {
 	gl.UseProgram(shaderProgram)
 
 	gl.ActiveTexture(gl.TEXTURE0)
 	gl.BindTexture(gl.TEXTURE_2D, screenTexture)
-	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RED, constants.ScreenWidth, constants.ScreenHeight, 0, gl.RED, gl.UNSIGNED_BYTE, gl.Ptr(&screen[0]))
+	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RED, ScreenWidth, ScreenHeight, 0, gl.RED, gl.UNSIGNED_BYTE, gl.Ptr(&screen[0]))
 	gl.ActiveTexture(gl.TEXTURE1)
 	gl.BindTexture(gl.TEXTURE_1D, paletteTexture)
 
@@ -237,7 +224,7 @@ func FinishUpdate(screen *[constants.ScreenWidth * constants.ScreenHeight]uint8)
 	window.SwapBuffers()
 }
 
-func SetPalette(palette *[3 * 256]uint8) {
+func SetPaletteGLFW(palette *[3 * 256]uint8) {
 	gl.BindTexture(gl.TEXTURE_1D, paletteTexture)
 	gl.TexImage1D(gl.TEXTURE_1D, 0, gl.RGBA, 256, 0, gl.RGB, gl.UNSIGNED_BYTE, gl.Ptr(&palette[0]))
 	gl.TexParameteri(gl.TEXTURE_1D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)

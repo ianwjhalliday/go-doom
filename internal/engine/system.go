@@ -1,8 +1,20 @@
 package engine
 
 import (
-	"github.com/ianwjhalliday/go-doom/internal/engine/glfwimpl"
+	"log/slog"
+	"os"
 )
+
+func FatalError(msg string, args ...any) {
+	slog.Error(msg, args...)
+	Terminate(1)
+}
+
+func Terminate(code int) {
+	slog.Debug("Terminate", "code", code)
+	ShutdownGraphics()
+	os.Exit(code)
+}
 
 // GameLoop is a placeholder until the proper D_DoomLoop with tic updates etc is implemented.
 func GameLoop() {
@@ -13,8 +25,8 @@ func GameLoop() {
 	titleScreen := LumpByName[Patch]("TITLEPIC")
 	DrawPatch(0, 0, 0, titleScreen)
 
-	for !glfwimpl.WindowShouldClose() {
-		glfwimpl.FinishUpdate(&screens[0])
-		glfwimpl.PollInputEvents()
+	for !WindowShouldClose() {
+		FinishUpdate(&screens[0])
+		PollInputEvents()
 	}
 }

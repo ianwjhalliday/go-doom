@@ -1,19 +1,22 @@
 package engine
 
 import (
-	"github.com/ianwjhalliday/go-doom/internal/engine/constants"
-	"github.com/ianwjhalliday/go-doom/internal/engine/glfwimpl"
 	"unsafe"
 )
 
-var screens [4][constants.ScreenWidth * constants.ScreenHeight]uint8
+const (
+	ScreenWidth  = 320
+	ScreenHeight = 200
+)
+
+var screens [4][ScreenWidth * ScreenHeight]uint8
 
 func InitGraphics() {
-	glfwimpl.InitGraphics()
+	InitGraphicsGLFW()
 }
 
 func ShutdownGraphics() {
-	glfwimpl.ShutdownGraphics()
+	ShutdownGraphicsGLFW()
 }
 
 func SetPalette(palette *[3 * 256]uint8, gammaLevel int) {
@@ -22,7 +25,7 @@ func SetPalette(palette *[3 * 256]uint8, gammaLevel int) {
 		gammaCorrectedPalette[i] = gammaTable[gammaLevel][palette[i]]
 	}
 
-	glfwimpl.SetPalette(&gammaCorrectedPalette)
+	SetPaletteGLFW(&gammaCorrectedPalette)
 }
 
 var gammaTable = [5][256]uint8{
@@ -145,7 +148,7 @@ func DrawPatch(x, y, screen int, patch *Patch) {
 	y -= int(patch.TopOffset)
 	x -= int(patch.LeftOffset)
 
-	destTop := unsafe.Pointer(&screens[screen][y*constants.ScreenWidth+x])
+	destTop := unsafe.Pointer(&screens[screen][y*ScreenWidth+x])
 	columnOfs := unsafe.Slice(&patch.ColumnOfs[0], int(patch.Width))
 
 	for col := 0; col < int(patch.Width); col, x, destTop = col+1, x+1, unsafe.Add(destTop, 1) {
@@ -154,12 +157,12 @@ func DrawPatch(x, y, screen int, patch *Patch) {
 		// step through the posts in a column
 		for column.TopDelta != 0xff {
 			source := unsafe.Add(unsafe.Pointer(column), 3)
-			dest := unsafe.Add(destTop, int(column.TopDelta)*constants.ScreenWidth)
+			dest := unsafe.Add(destTop, int(column.TopDelta)*ScreenWidth)
 
 			for count := column.Length; count != 0; count-- {
 				*(*byte)(dest) = *(*byte)(source)
 				source = unsafe.Add(source, 1)
-				dest = unsafe.Add(dest, constants.ScreenWidth)
+				dest = unsafe.Add(dest, ScreenWidth)
 			}
 			column = (*Column)(unsafe.Add(unsafe.Pointer(column), column.Length+4))
 		}

@@ -41,8 +41,7 @@ func InitFiles(filePaths []string) {
 	}
 
 	if len(Lumps) == 0 {
-		slog.Error("No lumps found in WADs or lump files", "files", filePaths)
-		os.Exit(1)
+		FatalError("No lumps found in WADs or lump files", "files", filePaths)
 	}
 	slog.Debug("Loaded files", "totalFiles", len(filePaths), "totalLumps", len(Lumps))
 }
@@ -62,28 +61,24 @@ type wadFileLump struct {
 func addWad(filePath string) {
 	fileBytes, err := os.ReadFile(filePath)
 	if err != nil {
-		slog.Error("Failed to read WAD file", "file", filePath, "err", err)
-		os.Exit(1)
+		FatalError("Failed to read WAD file", "file", filePath, "err", err)
 	}
 
 	var wadInfo wadInfo
 	_, err = binary.Decode(fileBytes, binary.LittleEndian, &wadInfo)
 	if err != nil {
-		slog.Error("Failed to read WAD header", "file", filePath, "err", err)
-		os.Exit(1)
+		FatalError("Failed to read WAD header", "file", filePath, "err", err)
 	}
 
 	id := string(wadInfo.Identification[:])
 	if id != "IWAD" && id != "PWAD" {
-		slog.Error("WAD file does not have IWAD or PWAD id", "file", filePath, "id", id)
-		os.Exit(1)
+		FatalError("WAD file does not have IWAD or PWAD id", "file", filePath, "id", id)
 	}
 
 	lumpTable := make([]wadFileLump, wadInfo.NumLumps)
 	_, err = binary.Decode(fileBytes[wadInfo.InfoTableOffset:], binary.LittleEndian, &lumpTable)
 	if err != nil {
-		slog.Error("Failed to read WAD lump table", "file", filePath, "err", err)
-		os.Exit(1)
+		FatalError("Failed to read WAD lump table", "file", filePath, "err", err)
 	}
 
 	for _, lump := range lumpTable {
@@ -104,8 +99,7 @@ func addLump(filePath string) {
 
 	fileBytes, err := os.ReadFile(filePath)
 	if err != nil {
-		slog.Error("Failed to read lump file", "file", filePath, "err", err)
-		os.Exit(1)
+		FatalError("Failed to read lump file", "file", filePath, "err", err)
 	}
 
 	Lumps = append(Lumps, Lump{
@@ -131,8 +125,7 @@ func LookupLumpNum(name string) (int, bool) {
 func LumpByName[T any](name string) *T {
 	num, found := LookupLumpNum(name)
 	if !found {
-		slog.Error(fmt.Sprintf("LumpByName: %q not found!", name))
-		os.Exit(1)
+		FatalError(fmt.Sprintf("LumpByName: %q not found!", name))
 	}
 
 	return (*T)(unsafe.Pointer(&Lumps[num].Data[0]))
