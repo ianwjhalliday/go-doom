@@ -25,8 +25,12 @@ func GameLoop() {
 	titleScreen := LumpByName[Patch]("TITLEPIC")
 	DrawPatch(0, 0, 0, titleScreen)
 
+	PlaySound("pstop")
+
 	for !WindowShouldClose() {
 		FinishUpdate(&screens[0])
 		PollInputEvents()
 	}
+
+	slog.Debug("GameLoop exiting")
 }

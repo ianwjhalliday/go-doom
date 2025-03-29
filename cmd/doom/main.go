@@ -24,6 +24,8 @@ func main() {
 	game.VetFiles(&game.Config)
 	game.PrintBanner(&game.Config)
 
+engine.InitSound()
+	defer engine.ShutdownSound()
 	engine.InitGraphics()
 	defer engine.ShutdownGraphics()
 
