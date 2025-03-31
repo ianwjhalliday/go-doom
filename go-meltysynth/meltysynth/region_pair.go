@@ -175,7 +175,8 @@ func (region regionPair) GetKeyNumberToVolumeEnvelopeDecay() int32 {
 }
 
 func (region regionPair) GetInitialAttenuation() float32 {
-	return float32(0.1) * float32(region.getGeneratorValue(gen_InitialAttenuation))
+	// TODO: Check if other generators need limiting. Also is the region where it should be limited?
+	return float32(0.1) * max(-250, min(1440, float32(region.getGeneratorValue(gen_InitialAttenuation))))
 }
 
 func (region regionPair) GetCoarseTune() int32 {

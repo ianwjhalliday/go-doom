@@ -27,8 +27,8 @@ func NewSynthesizerSettings(sampleRate int32) *SynthesizerSettings {
 }
 
 func (settings *SynthesizerSettings) validate() error {
-	if !(16000 <= settings.SampleRate && settings.SampleRate <= 192000) {
-		return errors.New("the sample rate must be between 16000 and 192000")
+	if !(8000 <= settings.SampleRate && settings.SampleRate <= 192000) {
+		return errors.New("the sample rate must be between 8000 and 192000")
 	}
 
 	if !(8 <= settings.BlockSize && settings.BlockSize <= 1024) {

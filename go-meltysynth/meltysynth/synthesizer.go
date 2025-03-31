@@ -341,6 +341,29 @@ func (s *Synthesizer) Render(left []float32, right []float32) {
 	}
 }
 
+func (s *Synthesizer) Render2xF64(samples [][2]float64) {
+	var wrote int32
+	length := int32(len(samples))
+	for wrote < length {
+		if s.blockRead == s.BlockSize {
+			s.renderBlock()
+			s.blockRead = 0
+		}
+
+		srcRem := s.BlockSize - s.blockRead
+		dstRem := length - wrote
+		rem := min(srcRem, dstRem)
+
+		for i := int32(0); i < rem; i++ {
+			samples[wrote+i][0] = float64(s.blockLeft[s.blockRead+i])
+			samples[wrote+i][1] = float64(s.blockRight[s.blockRead+i])
+		}
+
+		s.blockRead += rem
+		wrote += rem
+	}
+}
+
 func (s *Synthesizer) renderBlock() {
 	blockSize := int(s.BlockSize)
 	activeVoiceCount := int(s.voices.activeVoiceCount)
