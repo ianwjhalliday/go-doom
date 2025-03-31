@@ -2,6 +2,8 @@ module github.com/ianwjhalliday/go-doom
 
 go 1.23.6
 
+replace github.com/sinshu/go-meltysynth v0.0.0-20230205031334-05d311382fc4 => ./go-meltysynth
+
 require (
 	github.com/go-gl/gl v0.0.0-20231021071112-07e5d0ea2e71
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20250301202403-da16c1255728
@@ -10,6 +12,7 @@ require (
 	github.com/lmittmann/tint v1.0.7
 	github.com/mattn/go-isatty v0.0.20
 	github.com/mattn/go-shellwords v1.0.12
+	github.com/sinshu/go-meltysynth v0.0.0-20230205031334-05d311382fc4
 	github.com/spf13/pflag v1.0.6
 )
 

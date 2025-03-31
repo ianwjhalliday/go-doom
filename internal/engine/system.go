@@ -27,6 +27,8 @@ func GameLoop() {
 
 	PlaySound("pstop")
 
+	PlaySong("dm2ttl")
+
 	for !WindowShouldClose() {
 		FinishUpdate(&screens[0])
 		PollInputEvents()
