@@ -4,7 +4,7 @@ const SampleRate = 11025
 
 func InitSound() {
 	InitSoundBeep()
-	InitMus()
+	InitMusic()
 }
 
 func ShutdownSound() {
