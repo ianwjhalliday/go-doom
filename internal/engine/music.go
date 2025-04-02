@@ -8,7 +8,7 @@ func InitMusic() {
 	InitMusicMeltySynth()
 }
 
-func PlaySong(song string) {
+func PlaySong(song string, loop bool) {
 	songLump := LumpByName[mus.Header]("d_" + song)
 
 	reader, err := mus.NewReader(songLump)
@@ -22,4 +22,8 @@ func PlaySong(song string) {
 	}
 
 	PlaySongMeltySynth(songLump, events)
+}
+
+func StartMusic(music string) {
+	PlaySong(music, false)
 }

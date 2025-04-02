@@ -1,11 +1,10 @@
 package main
 
 import (
-	"runtime"
-
 	"github.com/ianwjhalliday/go-doom/internal/cmd"
 	"github.com/ianwjhalliday/go-doom/internal/engine"
 	"github.com/ianwjhalliday/go-doom/internal/game"
+	"runtime"
 )
 
 func init() {
@@ -29,5 +28,8 @@ engine.InitSound()
 	engine.InitGraphics()
 	defer engine.ShutdownGraphics()
 
-	engine.GameLoop()
+	// TODO: All the game package functions can become methods on the Game struct
+	g := game.New(&game.Config)
+
+	engine.GameLoop(g)
 }
