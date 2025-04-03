@@ -79,10 +79,9 @@ func initGLFWWindow() {
 	window.SetAspectRatio(4, 3)
 	window.SetInputMode(glfw.CursorMode, glfw.CursorDisabled)
 
-	// TODO: Input callbacks
-	//window.SetKeyCallback()
-	//window.SetMouseButtonCallback()
-	//window.SetCursorPosCallback()
+	window.SetKeyCallback(glfwKeyCallback)
+	window.SetMouseButtonCallback(glfwMouseButtonCallback)
+	window.SetCursorPosCallback(glfwCursorPosCallback)
 
 	window.MakeContextCurrent()
 }

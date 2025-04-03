@@ -32,6 +32,7 @@ type Game struct {
 	config *GameConfig
 	state  GameState
 	action GameAction
+	menu   Menu
 
 	userGame bool
 	paused   bool
@@ -64,6 +65,20 @@ func (g *Game) Display() {
 	case GameStateForceWipe, GameStateForceRedraw:
 		// Nothing
 	}
+
+	// Menu always draws on top of everything else
+	g.displayMenu()
+}
+
+func (g *Game) HandleEvent(ev *engine.Event) {
+	if g.eventMenu(ev) {
+		return // menu ate the event
+	}
+	g.eventGame(ev)
+}
+
+func (g *Game) eventGame(ev *engine.Event) bool {
+	return false
 }
 
 func (g *Game) Shutdown() {

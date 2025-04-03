@@ -82,7 +82,7 @@ func TryRunTicks(lastTicks int) (enterTicks int) {
 	}
 
 	StartTick()
-	//ProcessEvents()  // TODO: Hook up glfw input callbacks
+	ProcessEvents(game)
 	//BuildTiccmd()
 
 	game.Tick()
