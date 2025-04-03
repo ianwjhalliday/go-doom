@@ -32,7 +32,7 @@ type Game struct {
 	config *GameConfig
 	state  GameState
 	action GameAction
-	menu   Menu
+	menu   GameMenu
 
 	userGame bool
 	paused   bool
@@ -92,10 +92,6 @@ func (g *Game) Tick() {
 
 	g.tickMenu()
 	g.tickGame()
-}
-
-func (g *Game) tickMenu() {
-	// TODO
 }
 
 func (g *Game) tickGame() {
