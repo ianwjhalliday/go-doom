@@ -5,6 +5,18 @@ import (
 	"unicode"
 )
 
+func pauseMouseCaptureGLFW() {
+	window.SetInputMode(glfw.CursorMode, glfw.CursorNormal)
+	window.SetMouseButtonCallback(nil)
+	window.SetCursorPosCallback(nil)
+}
+
+func resumeMouseCaptureGLFW() {
+	window.SetInputMode(glfw.CursorMode, glfw.CursorDisabled)
+	window.SetMouseButtonCallback(glfwMouseButtonCallback)
+	window.SetCursorPosCallback(glfwCursorPosCallback)
+}
+
 func glfwKeyCallback(w *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
 	eventType := KeyUp
 	if action == glfw.Press || action == glfw.Repeat {
@@ -18,9 +30,11 @@ func glfwKeyCallback(w *glfw.Window, key glfw.Key, scancode int, action glfw.Act
 }
 
 func glfwMouseButtonCallback(w *glfw.Window, button glfw.MouseButton, action glfw.Action, mod glfw.ModifierKey) {
+	// TODO
 }
 
 func glfwCursorPosCallback(w *glfw.Window, xPos float64, yPos float64) {
+	// TODO
 }
 
 func translateKey(glfwKey glfw.Key) int {

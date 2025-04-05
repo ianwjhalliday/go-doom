@@ -61,7 +61,7 @@ var mainMenu = menu{
 
 func (g *Game) openMenu() {
 	g.menu.open = true
-	// TODO: Pause mouse capture
+	engine.PauseMouseCapture()
 	// TODO: Set which menu is active
 	g.menu.curMenu = &mainMenu
 	engine.PlaySound("swtchn")
@@ -69,7 +69,7 @@ func (g *Game) openMenu() {
 
 func (g *Game) closeMenu() {
 	g.menu.open = false
-	// TODO: Resume mouse capture
+	engine.ResumeMouseCapture()
 	engine.PlaySound("swtchx")
 }
 

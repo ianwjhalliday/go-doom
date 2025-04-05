@@ -66,3 +66,11 @@ func ProcessEvents(eh EventHandler) {
 		eh.HandleEvent(ev)
 	}
 }
+
+func PauseMouseCapture() {
+	pauseMouseCaptureGLFW()
+}
+
+func ResumeMouseCapture() {
+	resumeMouseCaptureGLFW()
+}
