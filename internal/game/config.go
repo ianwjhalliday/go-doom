@@ -3,6 +3,7 @@ package game
 import (
 	"fmt"
 	"github.com/ianwjhalliday/go-doom/internal/cmd"
+	"github.com/ianwjhalliday/go-doom/internal/game/dstrings"
 	"log/slog"
 	"os"
 	"path"
@@ -26,8 +27,10 @@ const (
 	GameModeIndetermined                 // Well, no IWAD found.
 )
 
+type Language int
+
 const (
-	LanguageEnglish = iota
+	LanguageEnglish Language = iota
 	LanguageFrench
 )
 
@@ -55,7 +58,7 @@ const (
 
 type GameConfig struct {
 	GameMode GameMode
-	Language int
+	Language Language
 
 	BaseDefaultConfigFile string
 	ConfigFile            string
@@ -163,6 +166,7 @@ func identifyVersion(args *cmd.Arguments) {
 			Config.Language = LanguageFrench
 			Config.WadFiles = append(Config.WadFiles, wadDoom2F)
 			slog.Info("French version.")
+			dstrings.InitFrench()
 		case exists(wadDoom2):
 			Config.GameMode = GameModeCommercial
 			Config.WadFiles = append(Config.WadFiles, wadDoom2)

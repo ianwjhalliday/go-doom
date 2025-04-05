@@ -23,6 +23,7 @@ func main() {
 	game.VetFiles(&game.Config)
 	game.PrintBanner(&game.Config)
 
+engine.InitHud()
 engine.InitSound()
 	defer engine.ShutdownSound()
 	engine.InitGraphics()

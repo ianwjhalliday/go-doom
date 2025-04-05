@@ -2,16 +2,23 @@ package game
 
 import (
 	"github.com/ianwjhalliday/go-doom/internal/engine"
+	"github.com/ianwjhalliday/go-doom/internal/game/dstrings"
 	"math/rand"
 	"time"
 )
 
 type GameMenu struct {
-	open             bool
-	curMenu          *menu
+	open    bool
+	curMenu *menu
+
 	whichSkull       int
 	skullAnimCounter int
+
+	messageString  string      // use nil if no message to display
+	promptCallback msgPromptCB // use nil when input not required
 }
+
+type msgPromptCB func(g *Game, input int)
 
 type menu struct {
 	items    []menuItem
@@ -77,17 +84,57 @@ func (g *Game) eventMenu(ev *engine.Event) bool {
 	}
 
 	// TODO: handle save game slot name input
-	// TODO: handle message prompt input
 
-	// TODO: F-keys and global hotkeys like -/+
-
-	// When menu isn't open the only response is to open the menu if ESC is pressed
-	if !g.menu.open {
-		if ch == engine.KeyEscape {
-			g.openMenu()
-			return true
+	// Take care of any messages that need input
+	if g.menu.messageString != "" {
+		if g.menu.promptCallback != nil &&
+			!(ch == ' ' || ch == 'n' || ch == 'y' || ch == engine.KeyEscape) {
+			return false
 		}
-		return false
+
+		g.menu.messageString = ""
+		g.menu.promptCallback(g, ch)
+
+		g.closeMenu()
+		return true
+	}
+
+	// When menu isn't open handle shortcut keys or ESC to open the menu. Do nothing otherwise.
+	if !g.menu.open {
+		switch ch {
+		case engine.KeyMinus:
+			// TODO
+		case engine.KeyEquals:
+			// TODO
+		case engine.KeyF1:
+			// TODO
+		case engine.KeyF2:
+			// TODO
+		case engine.KeyF3:
+			// TODO
+		case engine.KeyF4:
+			// TODO
+		case engine.KeyF5:
+			// TODO
+		case engine.KeyF6:
+			// TODO
+		case engine.KeyF7:
+			// TODO
+		case engine.KeyF8:
+			// TODO
+		case engine.KeyF9:
+			// TODO
+		case engine.KeyF10:
+			menuActionQuit(g, 0)
+			engine.PlaySound("swtchn")
+		case engine.KeyF11:
+			// TODO
+		case engine.KeyEscape:
+			g.openMenu()
+		default:
+			return false
+		}
+		return true
 	}
 
 	// Otherwise, navigate the menus
@@ -175,6 +222,11 @@ func (g *Game) tickMenu() {
 const lineHeight = 16
 
 func (g *Game) displayMenu() {
+	if g.menu.messageString != "" {
+		engine.HudDrawCenteredText(g.menu.messageString)
+		return
+	}
+
 	if !g.menu.open {
 		return
 	}
@@ -206,11 +258,30 @@ func drawMainMenu() {
 	engine.DrawPatch(94, 2, 0, engine.LumpByName[engine.Patch]("M_DOOM"))
 }
 
+func (g *Game) startMessage(msg string, cb msgPromptCB) {
+	g.menu.messageString = msg
+	g.menu.promptCallback = cb
+}
+
 func menuActionTODO(g *Game, choice int) {}
 
 func menuActionQuit(g *Game, choice int) {
-	// TODO: This is actually the 'y' response to the quit menu "are you sure?" message
-	//  Still need to implement the message prompt.
+	// Choose an end message at random, between 1 and maximum number, when language is English.
+	// Otherwise, choose index 0 which is language neutral.
+	endMsg := dstrings.EndMessages[1+rand.Intn(len(dstrings.EndMessages)-1)]
+	if g.config.Language != LanguageEnglish {
+		endMsg = dstrings.EndMessages[0]
+	}
+
+	endMsg += "\n\n" + dstrings.DOSY
+
+	g.startMessage(endMsg, menuResponseQuit)
+}
+
+func menuResponseQuit(g *Game, input int) {
+	if input != 'y' {
+		return
+	}
 
 	quitSounds := []string{
 		"pldeth",
